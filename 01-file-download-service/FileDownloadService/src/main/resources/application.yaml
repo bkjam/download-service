@@ -1,0 +1,16 @@
+#############################################
+# Server Configurations
+#############################################
+
+spring.application.name: file-download-service
+server.port: 8080
+
+#############################################
+# S3 Configurations
+#############################################
+
+object-storage:
+  endpoint: http://localhost:9000
+  access-key: admin
+  access-secret: password
+  bucket: storage
