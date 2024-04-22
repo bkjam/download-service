@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  redis:
+    extends:
+      file: ./Redis/docker-compose.yaml
+      service: redis
+  minio:
+    extends:
+      file: ./Minio/docker-compose.yaml
+      service: minio
+  web_gateway:
+    extends:
+      file: ./Nginx/docker-compose.yaml
+      service: nginx
+    environment:
+      - "DOWNLOAD_SERVICE_URL=http://download_service:8080"
+      - "REDIS_PASSWORD=APHGGBHQkHdgD49pjuBfkyKCKZAsrr"
+      - "REDIS_HOSTNAME=redis"
+      - "REDIS_PORT=6379"
+      - "S3_HOSTNAME=minio"
+      - "S3_PORT=9000"
+    depends_on:
+      - minio
+      - redis
+      - download_service
+  download_service:
+    container_name: download_service
+    image: filedownloadservice:latest
+    environment:
+      - "OBJECT_STORAGE_ENDPOINT=http://minio:9000"
+      - "SPRING_DATA_REDIS_HOST=redis"
+    ports:
+      - 8080:8080
+    depends_on:
+      - minio
+      - redis
